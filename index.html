@@ -1,0 +1,1797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Power Fit Fitness Gym - Member Management</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-dark: #1a1a1a;
+      --bg-darker: #2d2d2d;
+      --bg-light: #000000;
+      --text-primary: #ffffff;
+      --text-secondary: #cccccc;
+      --text-muted: #999999;
+      --border-color: #dc143c;
+      --border-hover: #ff4d4d;
+      --input-bg: #2d2d2d;
+      --card-bg: #2d2d2d;
+      --photo-bg: #1a1a1a;
+      --empty-text: #666666;
+    }
+
+    body.light-mode {
+      --bg-dark: #ffffff;
+      --bg-darker: #f5f5f5;
+      --bg-light: #fafafa;
+      --text-primary: #1a1a1a;
+      --text-secondary: #333333;
+      --text-muted: #666666;
+      --border-color: #dc143c;
+      --border-hover: #ff4d4d;
+      --input-bg: #ffffff;
+      --card-bg: #f9fafb;
+      --photo-bg: #f5f5f5;
+      --empty-text: #cccccc;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-darker) 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: var(--text-primary);
+      transition: background 0.3s ease;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .mode-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 100;
+      background: var(--card-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 50px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 16px rgba(220, 20, 60, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .mode-toggle:hover {
+      box-shadow: 0 8px 24px rgba(220, 20, 60, 0.3);
+    }
+
+    .mode-toggle-btn {
+      background: none;
+      border: none;
+      font-size: 1.3rem;
+      cursor: pointer;
+      padding: 4px 8px;
+      transition: transform 0.3s;
+      width: auto;
+    }
+
+    .mode-toggle-btn:hover {
+      transform: scale(1.2);
+    }
+
+    .mode-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      min-width: 60px;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-dark) 100%);
+      border: 3px solid var(--border-color);
+      border-radius: 10px;
+      padding: 25px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 32px rgba(220, 20, 60, 0.3);
+    }
+
+    header h1 {
+      color: var(--border-color);
+      margin-bottom: 10px;
+      font-size: 2.8rem;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      text-shadow: 0 2px 8px rgba(220, 20, 60, 0.5);
+      font-weight: 900;
+    }
+
+    header p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      gap: 30px;
+      align-items: start;
+    }
+
+    .form-section {
+      background: var(--bg-dark);
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
+      padding: 25px;
+      box-shadow: 0 8px 32px rgba(220, 20, 60, 0.2);
+      height: fit-content;
+    }
+
+    .form-section h2 {
+      color: var(--border-color);
+      margin-bottom: 20px;
+      font-size: 1.3rem;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--text-primary);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .required {
+      color: var(--border-hover);
+    }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="file"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 2px solid var(--border-color);
+      background: var(--input-bg);
+      color: var(--text-primary);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+
+    input[type="text"]:focus,
+    input[type="date"]:focus,
+    input[type="file"]:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--border-hover);
+      box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.3);
+      background: var(--photo-bg);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 70px;
+      max-height: 150px;
+    }
+
+    input[type="date"] {
+      color-scheme: dark;
+    }
+
+    body.light-mode input[type="date"] {
+      color-scheme: light;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(1) brightness(1.2);
+      cursor: pointer;
+    }
+
+    body.light-mode input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(0) brightness(0.8);
+    }
+
+    input[type="file"]::file-selector-button {
+      background: var(--border-color);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    input[type="file"]::file-selector-button:hover {
+      background: var(--border-hover);
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      background: var(--input-bg);
+      border-radius: 6px;
+      border: 2px solid var(--border-color);
+    }
+
+    input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: var(--border-color);
+    }
+
+    .checkbox-group label {
+      margin: 0;
+      cursor: pointer;
+      flex: 1;
+      color: var(--text-primary);
+    }
+
+    .photo-preview {
+      width: 100%;
+      height: 150px;
+      background: var(--photo-bg);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+      overflow: hidden;
+      border: 2px dashed var(--border-color);
+    }
+
+    .photo-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .photo-preview-empty {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .camera-toggle {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .camera-toggle button {
+      flex: 1;
+      padding: 8px 12px;
+      border: 2px solid var(--border-color);
+      background: transparent;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    body.light-mode .camera-toggle button {
+      color: var(--border-color);
+    }
+
+    .camera-toggle button.active {
+      background: var(--border-color);
+      color: white;
+    }
+
+    .camera-toggle button:hover {
+      background: var(--border-color);
+      color: white;
+    }
+
+    #cameraContainer {
+      display: none;
+      margin-bottom: 12px;
+    }
+
+    #cameraContainer.active {
+      display: block;
+    }
+
+    video {
+      width: 100%;
+      border-radius: 6px;
+      background: #000;
+      margin-bottom: 8px;
+      border: 2px solid var(--border-color);
+      height: auto;
+      display: block;
+    }
+
+    .camera-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .camera-buttons button {
+      flex: 1;
+      padding: 8px 12px;
+      border: none;
+      background: var(--border-color);
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+      transition: background 0.3s;
+    }
+
+    .camera-buttons button:hover {
+      background: var(--border-hover);
+    }
+
+    canvas {
+      display: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, var(--border-color) 0%, var(--border-hover) 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(220, 20, 60, 0.5);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .dashboard-section {
+      background: var(--bg-dark);
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
+      padding: 25px;
+      box-shadow: 0 8px 32px rgba(220, 20, 60, 0.2);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 15px;
+    }
+
+    .tab-btn {
+      padding: 10px 20px;
+      background: transparent;
+      color: var(--text-muted);
+      border: 2px solid transparent;
+      border-bottom: 3px solid transparent;
+      border-radius: 0;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      width: auto;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-primary);
+      border-bottom-color: var(--border-color);
+    }
+
+    .tab-btn.active {
+      color: var(--border-color);
+      border-bottom-color: var(--border-color);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .dashboard-header h2 {
+      color: var(--border-color);
+      font-size: 1.5rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .search-filter {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 200px;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 10px 40px 10px 12px;
+      border: 2px solid var(--border-color);
+      background: var(--input-bg);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+    }
+
+    .search-box::after {
+      content: '🔍';
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    .filter-select {
+      min-width: 150px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, var(--border-color) 0%, var(--border-hover) 100%);
+      color: white;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 4px 16px rgba(220, 20, 60, 0.3);
+      border: 2px solid #000;
+    }
+
+    .stat-card .number {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 5px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .stat-card .label {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .expiring-today-section {
+      background: var(--bg-darker);
+      border: 2px solid var(--border-hover);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 25px;
+    }
+
+    .expiring-today-section h3 {
+      color: var(--border-hover);
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .expiring-list {
+      list-style: none;
+    }
+
+    .expiring-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: var(--photo-bg);
+      border-left: 3px solid var(--border-hover);
+      margin-bottom: 10px;
+      border-radius: 4px;
+    }
+
+    .expiring-item img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .expiring-item-no-photo {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .expiring-item-info {
+      flex: 1;
+    }
+
+    .expiring-item-name {
+      color: var(--text-primary);
+      font-weight: bold;
+      margin-bottom: 3px;
+    }
+
+    .expiring-item-date {
+      color: var(--border-hover);
+      font-size: 0.9rem;
+    }
+
+    .members-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .members-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .date-section {
+      background: var(--bg-darker);
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+
+    .date-header {
+      color: var(--border-color);
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .date-members {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .member-list-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px;
+      background: var(--photo-bg);
+      border-radius: 6px;
+      border-left: 4px solid var(--border-color);
+    }
+
+    .member-list-item img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .member-list-item-no-photo {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      flex-shrink: 0;
+    }
+
+    .member-list-info {
+      flex: 1;
+    }
+
+    .member-list-name {
+      color: var(--text-primary);
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .member-list-status {
+      display: flex;
+      gap: 8px;
+      font-size: 0.85rem;
+      flex-wrap: wrap;
+      margin-bottom: 5px;
+    }
+
+    .member-list-remarks {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-style: italic;
+      margin-top: 5px;
+    }
+
+    .member-card {
+      background: var(--card-bg);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(220, 20, 60, 0.2);
+      transition: transform 0.3s, box-shadow 0.3s;
+      border: 2px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .member-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 24px rgba(220, 20, 60, 0.4);
+      border-color: var(--border-hover);
+    }
+
+    .member-photo {
+      width: 100%;
+      height: 200px;
+      background: var(--photo-bg);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .member-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .member-photo-placeholder {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, var(--border-color) 0%, var(--border-hover) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+    }
+
+    .member-info {
+      padding: 15px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .member-name {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      word-break: break-word;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .member-due {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .member-remarks-section {
+      margin-bottom: 10px;
+    }
+
+    .member-remarks {
+      background: var(--photo-bg);
+      border: 1px solid var(--empty-text);
+      border-radius: 4px;
+      padding: 8px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      max-height: 80px;
+      overflow-y: auto;
+      min-height: 40px;
+      cursor: text;
+      transition: all 0.3s;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+      outline: none;
+    }
+
+    .member-remarks:empty::before {
+      content: attr(data-placeholder);
+      color: var(--empty-text);
+      font-style: italic;
+    }
+
+    .member-remarks:hover {
+      border-color: var(--border-color);
+      background: var(--input-bg);
+    }
+
+    .member-remarks:focus {
+      border-color: var(--border-hover);
+      box-shadow: 0 0 0 2px rgba(220, 20, 60, 0.2);
+      background: var(--input-bg);
+    }
+
+    .waiver-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .waiver-signed {
+      background: var(--border-color);
+      color: white;
+    }
+
+    .waiver-unsigned {
+      background: #ff6b35;
+      color: white;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 10px;
+      margin-left: 8px;
+      text-transform: uppercase;
+    }
+
+    .status-active {
+      background: #28a745;
+      color: white;
+    }
+
+    .status-expired {
+      background: var(--border-color);
+      color: white;
+    }
+
+    .member-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-small {
+      flex: 1;
+      padding: 8px 10px;
+      font-size: 0.85rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .btn-renew {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      color: white;
+    }
+
+    .btn-renew:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+    }
+
+    .btn-edit {
+      background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+      color: white;
+    }
+
+    .btn-edit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+    }
+
+    .btn-delete {
+      background: linear-gradient(135deg, var(--border-color) 0%, var(--border-hover) 100%);
+      color: white;
+    }
+
+    .btn-delete:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(220, 20, 60, 0.4);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+    }
+
+    .empty-state p {
+      font-size: 1.1rem;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    body.light-mode .modal {
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--bg-dark);
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
+      padding: 30px;
+      max-width: 450px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(220, 20, 60, 0.5);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-content h3 {
+      color: var(--border-color);
+      margin-bottom: 20px;
+      font-size: 1.3rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .modal-photo-section {
+      margin-bottom: 20px;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      padding: 15px;
+      background: var(--bg-darker);
+    }
+
+    .modal-photo-preview {
+      width: 100%;
+      height: 180px;
+      background: var(--photo-bg);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+      overflow: hidden;
+      border: 2px dashed var(--border-color);
+    }
+
+    .modal-photo-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .modal-photo-placeholder {
+      font-size: 3rem;
+    }
+
+    .modal-photo-buttons {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .modal-photo-buttons button {
+      flex: 1;
+      padding: 8px 12px;
+      font-size: 0.85rem;
+      background: var(--border-color);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    .modal-photo-buttons button:hover {
+      background: var(--border-hover);
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .modal-buttons button {
+      flex: 1;
+    }
+
+    .btn-cancel {
+      background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+      color: white;
+    }
+
+    .btn-cancel:hover {
+      box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
+    }
+
+    @media (max-width: 1024px) {
+      .content {
+        grid-template-columns: 1fr;
+      }
+
+      .form-section {
+        max-width: 100%;
+      }
+
+      .mode-toggle {
+        top: auto;
+        bottom: 20px;
+        right: 20px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 1.8rem;
+      }
+
+      .dashboard-header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .search-filter {
+        flex-direction: column;
+      }
+
+      .search-box,
+      .filter-select {
+        min-width: unset;
+      }
+
+      .members-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .tabs {
+        flex-wrap: wrap;
+      }
+
+      .tab-btn {
+        flex: 1;
+        min-width: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Mode Toggle -->
+    <div class="mode-toggle">
+      <span class="mode-label" id="modeLabel">Night</span>
+      <button class="mode-toggle-btn" id="modeToggleBtn" title="Toggle day/night mode">🌙</button>
+    </div>
+
+    <!-- Header -->
+    <header>
+      <h1>POWER FIT FITNESS GYM</h1>
+      <p>Professional Member Management System</p>
+    </header>
+
+    <!-- Main Content -->
+    <div class="content">
+      <!-- Left Sidebar: Add Member Form -->
+      <div class="form-section">
+        <h2>➕ Add New Member</h2>
+        
+        <form id="memberForm">
+          <div class="form-group">
+            <label for="memberName">📝 Member Name <span class="required">*</span></label>
+            <input type="text" id="memberName" placeholder="Enter full name" required />
+          </div>
+
+          <div class="form-group">
+            <label for="memberDue">📅 Subscription Due Date <span class="required">*</span></label>
+            <input type="date" id="memberDue" required />
+          </div>
+
+          <div class="form-group">
+            <label for="memberRemarks">📝 Remarks</label>
+            <textarea id="memberRemarks" placeholder="Add any notes or remarks about this member..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <div class="checkbox-group">
+              <input type="checkbox" id="waiverSigned" />
+              <label for="waiverSigned">✔️ Waiver Signed</label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>📸 Photo (Optional)</label>
+            
+            <div class="camera-toggle">
+              <button type="button" class="camera-btn active" data-mode="upload">📁 Upload</button>
+              <button type="button" class="camera-btn" data-mode="camera">📷 Camera</button>
+            </div>
+
+            <div id="uploadMode" class="upload-mode">
+              <div class="photo-preview" id="photoPreview">
+                <span class="photo-preview-empty">No photo selected</span>
+              </div>
+              <input type="file" id="memberPhoto" accept="image/*" />
+            </div>
+
+            <div id="cameraContainer">
+              <video id="cameraVideo" playsinline autoplay></video>
+              <canvas id="photoCanvas"></canvas>
+              <div class="camera-buttons">
+                <button type="button" id="captureBtn">📸 Capture</button>
+                <button type="button" id="stopCameraBtn">❌ Close</button>
+              </div>
+            </div>
+          </div>
+
+          <input type="hidden" id="photoData" />
+
+          <button type="submit">✅ Add Member</button>
+        </form>
+      </div>
+
+      <!-- Right Side: Dashboard -->
+      <div class="dashboard-section">
+        <!-- Tabs -->
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="dashboard">📊 Dashboard</button>
+          <button class="tab-btn" data-tab="expiring-today">🚨 Expiring Today</button>
+          <button class="tab-btn" data-tab="by-date">📅 View by Date</button>
+        </div>
+
+        <!-- DASHBOARD TAB -->
+        <div id="dashboard" class="tab-content active">
+          <div class="dashboard-header">
+            <h2>📊 Member Dashboard</h2>
+            <div class="search-filter">
+              <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search by name..." />
+              </div>
+              <select id="filterStatus" class="filter-select">
+                <option value="">All Members</option>
+                <option value="active">Active Only</option>
+                <option value="expired">Expired Only</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="stats">
+            <div class="stat-card">
+              <div class="number" id="totalCount">0</div>
+              <div class="label">Total Members</div>
+            </div>
+            <div class="stat-card">
+              <div class="number" id="activeCount">0</div>
+              <div class="label">Active</div>
+            </div>
+            <div class="stat-card">
+              <div class="number" id="expiredCount">0</div>
+              <div class="label">Expired</div>
+            </div>
+          </div>
+
+          <div id="membersContainer" class="members-grid"></div>
+        </div>
+
+        <!-- EXPIRING TODAY TAB -->
+        <div id="expiring-today" class="tab-content">
+          <div class="dashboard-header">
+            <h2>🚨 Subscriptions Expiring Today</h2>
+          </div>
+          <div class="expiring-today-section" id="expiringTodayContainer"></div>
+        </div>
+
+        <!-- VIEW BY DATE TAB -->
+        <div id="by-date" class="tab-content">
+          <div class="dashboard-header">
+            <h2>📅 View by Expiration Date</h2>
+          </div>
+          <div id="byDateContainer" class="members-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <h3>✏️ Edit Member</h3>
+      <form id="editForm">
+        <div class="form-group">
+          <label for="editName">Member Name</label>
+          <input type="text" id="editName" required />
+        </div>
+        <div class="form-group">
+          <label for="editDue">Subscription Due Date</label>
+          <input type="date" id="editDue" required />
+        </div>
+        <div class="form-group">
+          <label for="editRemarks">Remarks</label>
+          <textarea id="editRemarks" placeholder="Add any notes or remarks about this member..."></textarea>
+        </div>
+        <div class="form-group">
+          <div class="checkbox-group">
+            <input type="checkbox" id="editWaiverSigned" />
+            <label for="editWaiverSigned">✔️ Waiver Signed</label>
+          </div>
+        </div>
+
+        <div class="modal-photo-section">
+          <label style="color: var(--border-color); font-weight: bold; margin-bottom: 12px; display: block;">📸 Change Photo</label>
+          <div class="modal-photo-preview" id="editPhotoPreview">
+            <span class="modal-photo-placeholder">👤</span>
+          </div>
+          <div class="modal-photo-buttons">
+            <button type="button" id="editUploadBtn">📁 Upload</button>
+            <button type="button" id="editCameraBtn">📷 Camera</button>
+          </div>
+          <input type="file" id="editMemberPhoto" accept="image/*" style="display: none;" />
+          <div id="editCameraContainer" style="display: none;">
+            <video id="editCameraVideo" playsinline autoplay style="width: 100%; border-radius: 6px; margin-bottom: 8px; background: #000; border: 2px solid var(--border-color);"></video>
+            <canvas id="editPhotoCanvas"></canvas>
+            <div style="display: flex; gap: 8px;">
+              <button type="button" id="editCaptureBtn" style="flex: 1; padding: 8px 12px; font-size: 0.85rem; background: var(--border-color); color: white; border: none; border-radius: 6px;">📸 Capture</button>
+              <button type="button" id="editStopCameraBtn" style="flex: 1; padding: 8px 12px; font-size: 0.85rem; background: var(--border-color); color: white; border: none; border-radius: 6px;">❌ Close</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-buttons">
+          <button type="button" class="btn-cancel" id="cancelEditBtn">Cancel</button>
+          <button type="submit">💾 Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // ==================== MODE TOGGLE ====================
+    const modeToggleBtn = document.getElementById('modeToggleBtn');
+    const modeLabel = document.getElementById('modeLabel');
+    const body = document.body;
+
+    const savedMode = localStorage.getItem('theme-mode') || 'dark';
+    if (savedMode === 'light') {
+      body.classList.add('light-mode');
+      modeToggleBtn.textContent = '☀️';
+      modeLabel.textContent = 'Day';
+    }
+
+    modeToggleBtn.addEventListener('click', () => {
+      body.classList.toggle('light-mode');
+      
+      if (body.classList.contains('light-mode')) {
+        modeToggleBtn.textContent = '☀️';
+        modeLabel.textContent = 'Day';
+        localStorage.setItem('theme-mode', 'light');
+      } else {
+        modeToggleBtn.textContent = '🌙';
+        modeLabel.textContent = 'Night';
+        localStorage.setItem('theme-mode', 'dark');
+      }
+    });
+
+    // ==================== DATA MANAGEMENT ====================
+    let members = JSON.parse(localStorage.getItem('gymMembers')) || [];
+    let editingMemberId = null;
+    let currentPhotoData = null;
+    let editingPhotoData = null;
+    let editCameraStream = null;
+    let cameraStream = null;
+
+    // ==================== TAB SWITCHING ====================
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tabName = btn.dataset.tab;
+        
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        btn.classList.add('active');
+        document.getElementById(tabName).classList.add('active');
+        
+        if (tabName === 'expiring-today') {
+          renderExpiringToday();
+        } else if (tabName === 'by-date') {
+          renderByDate();
+        }
+      });
+    });
+
+    // ==================== CAMERA FUNCTIONALITY ====================
+    document.querySelectorAll('.camera-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const mode = btn.dataset.mode;
+        document.querySelectorAll('.camera-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        if (mode === 'camera') {
+          startCamera();
+        } else {
+          stopCamera();
+          document.getElementById('cameraContainer').classList.remove('active');
+          document.getElementById('uploadMode').style.display = 'block';
+        }
+      });
+    });
+
+    function startCamera() {
+      document.getElementById('uploadMode').style.display = 'none';
+      document.getElementById('cameraContainer').classList.add('active');
+
+      navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          facingMode: 'user',
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        } 
+      })
+        .then(stream => {
+          cameraStream = stream;
+          const video = document.getElementById('cameraVideo');
+          video.srcObject = stream;
+          
+          video.onloadedmetadata = () => {
+            video.play();
+          };
+        })
+        .catch(err => {
+          alert('❌ Camera access denied. Please allow camera permissions and try again.');
+          console.error('Camera error:', err);
+          stopCamera();
+        });
+    }
+
+    function stopCamera() {
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+      }
+      document.getElementById('cameraContainer').classList.remove('active');
+      document.getElementById('uploadMode').style.display = 'block';
+      document.querySelectorAll('.camera-btn')[0].classList.add('active');
+      document.querySelectorAll('.camera-btn')[1].classList.remove('active');
+    }
+
+    document.getElementById('captureBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      const video = document.getElementById('cameraVideo');
+      const canvas = document.getElementById('photoCanvas');
+      const ctx = canvas.getContext('2d');
+
+      if (video.videoWidth === 0 || video.videoHeight === 0) {
+        alert('❌ Camera is not ready. Please wait a moment and try again.');
+        return;
+      }
+
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0);
+
+      currentPhotoData = canvas.toDataURL('image/jpeg', 0.9);
+      document.getElementById('photoPreview').innerHTML = `<img src="${currentPhotoData}" />`;
+      document.getElementById('memberPhoto').value = '';
+
+      stopCamera();
+      alert('✅ Photo captured successfully!');
+    });
+
+    document.getElementById('stopCameraBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      stopCamera();
+    });
+
+    // ==================== FILE UPLOAD ====================
+    document.getElementById('memberPhoto').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          currentPhotoData = event.target.result;
+          document.getElementById('photoPreview').innerHTML = `<img src="${currentPhotoData}" />`;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // ==================== EDIT MODAL - PHOTO FUNCTIONS ====================
+    document.getElementById('editUploadBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      document.getElementById('editMemberPhoto').click();
+    });
+
+    document.getElementById('editMemberPhoto').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          editingPhotoData = event.target.result;
+          document.getElementById('editPhotoPreview').innerHTML = `<img src="${editingPhotoData}" />`;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    document.getElementById('editCameraBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      startEditCamera();
+    });
+
+    function startEditCamera() {
+      document.getElementById('editCameraContainer').style.display = 'block';
+
+      navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          facingMode: 'user',
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        } 
+      })
+        .then(stream => {
+          editCameraStream = stream;
+          const video = document.getElementById('editCameraVideo');
+          video.srcObject = stream;
+          
+          video.onloadedmetadata = () => {
+            video.play();
+          };
+        })
+        .catch(err => {
+          alert('❌ Camera access denied. Please allow camera permissions and try again.');
+          console.error('Camera error:', err);
+        });
+    }
+
+    function stopEditCamera() {
+      if (editCameraStream) {
+        editCameraStream.getTracks().forEach(track => track.stop());
+        editCameraStream = null;
+      }
+      document.getElementById('editCameraContainer').style.display = 'none';
+    }
+
+    document.getElementById('editCaptureBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      const video = document.getElementById('editCameraVideo');
+      const canvas = document.getElementById('editPhotoCanvas');
+      const ctx = canvas.getContext('2d');
+
+      if (video.videoWidth === 0 || video.videoHeight === 0) {
+        alert('❌ Camera is not ready. Please wait a moment and try again.');
+        return;
+      }
+
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0);
+
+      editingPhotoData = canvas.toDataURL('image/jpeg', 0.9);
+      document.getElementById('editPhotoPreview').innerHTML = `<img src="${editingPhotoData}" />`;
+
+      stopEditCamera();
+      alert('✅ Photo captured successfully!');
+    });
+
+    document.getElementById('editStopCameraBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      stopEditCamera();
+    });
+
+    // ==================== FORM SUBMISSION ====================
+    document.getElementById('memberForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('memberName').value.trim();
+      const due = document.getElementById('memberDue').value;
+      const remarks = document.getElementById('memberRemarks').value.trim();
+      const waiverSigned = document.getElementById('waiverSigned').checked;
+
+      if (!name || !due) {
+        alert('⚠️ Please fill in name and due date.');
+        return;
+      }
+
+      const newMember = {
+        id: Date.now(),
+        name,
+        due,
+        remarks,
+        waiverSigned,
+        photo: currentPhotoData || null,
+        createdAt: new Date().toISOString()
+      };
+
+      members.push(newMember);
+      saveMembersToStorage();
+      renderMembers();
+      renderExpiringToday();
+      renderByDate();
+      resetForm();
+
+      alert('✅ Member added successfully!');
+    });
+
+    function resetForm() {
+      document.getElementById('memberForm').reset();
+      currentPhotoData = null;
+      document.getElementById('photoPreview').innerHTML = '<span class="photo-preview-empty">No photo selected</span>';
+      document.querySelectorAll('.camera-btn')[0].classList.add('active');
+      document.querySelectorAll('.camera-btn')[1].classList.remove('active');
+    }
+
+    // ==================== SEARCH & FILTER ====================
+    document.getElementById('searchInput').addEventListener('input', renderMembers);
+    document.getElementById('filterStatus').addEventListener('change', renderMembers);
+
+    function getFilteredMembers() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const statusFilter = document.getElementById('filterStatus').value;
+      const today = new Date().toISOString().split('T')[0];
+
+      return members.filter(member => {
+        const matchesSearch = member.name.toLowerCase().includes(searchTerm);
+        const isActive = member.due >= today;
+
+        if (statusFilter === 'active') return matchesSearch && isActive;
+        if (statusFilter === 'expired') return matchesSearch && !isActive;
+        return matchesSearch;
+      });
+    }
+
+    // ==================== RENEW SUBSCRIPTION ====================
+    function renewMembership(id) {
+      const member = members.find(m => m.id === id);
+      if (!member) return;
+
+      const currentDue = new Date(member.due + 'T00:00:00');
+      const newDue = new Date(currentDue);
+      newDue.setMonth(newDue.getMonth() + 1);
+
+      member.due = newDue.toISOString().split('T')[0];
+      saveMembersToStorage();
+      renderMembers();
+      renderExpiringToday();
+      renderByDate();
+
+      const formattedDate = newDue.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+      alert(`✅ Subscription renewed! New due date: ${formattedDate}`);
+    }
+
+    // ==================== EDITABLE REMARKS ====================
+    function saveRemarks(memberId, newRemarks) {
+      const member = members.find(m => m.id === memberId);
+      if (member) {
+        member.remarks = newRemarks.trim();
+        saveMembersToStorage();
+      }
+    }
+
+    // ==================== RENDER EXPIRING TODAY ====================
+    function renderExpiringToday() {
+      const today = new Date().toISOString().split('T')[0];
+      const expiringToday = members.filter(m => m.due === today).sort((a, b) => a.name.localeCompare(b.name));
+
+      const container = document.getElementById('expiringTodayContainer');
+
+      if (expiringToday.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>✅ No members expiring today!</p></div>';
+        return;
+      }
+
+      container.innerHTML = `
+        <ul class="expiring-list">
+          ${expiringToday.map(member => `
+            <li class="expiring-item">
+              ${member.photo 
+                ? `<img src="${member.photo}" alt="${member.name}" />` 
+                : `<div class="expiring-item-no-photo">👤</div>`
+              }
+              <div class="expiring-item-info">
+                <div class="expiring-item-name">${member.name}</div>
+                <div class="expiring-item-date">⚠️ EXPIRES TODAY (${today})</div>
+                ${member.remarks ? `<div style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 3px;">📝 ${member.remarks}</div>` : ''}
+              </div>
+            </li>
+          `).join('')}
+        </ul>
+      `;
+    }
+
+    // ==================== RENDER BY DATE ====================
+    function renderByDate() {
+      const sorted = [...members].sort((a, b) => new Date(a.due) - new Date(b.due));
+      const container = document.getElementById('byDateContainer');
+
+      if (sorted.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>📭 No members yet.</p></div>';
+        return;
+      }
+
+      const grouped = {};
+      sorted.forEach(member => {
+        if (!grouped[member.due]) {
+          grouped[member.due] = [];
+        }
+        grouped[member.due].push(member);
+      });
+
+      const today = new Date().toISOString().split('T')[0];
+
+      container.innerHTML = Object.keys(grouped).map(date => {
+        const dateObj = new Date(date + 'T00:00:00');
+        const isToday = date === today;
+        const formattedDate = dateObj.toLocaleDateString('en-US', {
+          weekday: 'short',
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric'
+        });
+
+        const dateLabel = isToday ? `${formattedDate} 🚨 TODAY` : formattedDate;
+
+        return `
+          <div class="date-section">
+            <div class="date-header">📅 ${dateLabel}</div>
+            <div class="date-members">
+              ${grouped[date].map(member => {
+                const isActive = member.due >= today;
+                const statusClass = isActive ? 'status-active' : 'status-expired';
+                const statusText = isActive ? '✅ Active' : '❌ Expired';
+                const waiverText = member.waiverSigned ? '✅ Signed' : '⚠️ Pending';
+
+                return `
+                  <div class="member-list-item">
+                    ${member.photo 
+                      ? `<img src="${member.photo}" alt="${member.name}" />` 
+                      : `<div class="member-list-item-no-photo">👤</div>`
+                    }
+                    <div class="member-list-info">
+                      <div class="member-list-name">${member.name}</div>
+                      <div class="member-list-status">
+                        <span class="status-badge ${statusClass}">${statusText}</span>
+                        <span class="waiver-badge ${member.waiverSigned ? 'waiver-signed' : 'waiver-unsigned'}">${waiverText}</span>
+                      </div>
+                      ${member.remarks ? `<div class="member-list-remarks">📝 ${member.remarks}</div>` : ''}
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ==================== RENDER MEMBERS ====================
+    function renderMembers() {
+      const filteredMembers = getFilteredMembers();
+      const container = document.getElementById('membersContainer');
+
+      if (filteredMembers.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column: 1/-1;">
+            <div class="empty-state">
+              <p>📭 No members found. Add your first member to get started!</p>
+            </div>
+          </div>
+        `;
+        updateStats();
+        return;
+      }
+
+      container.innerHTML = filteredMembers.map(member => {
+        const today = new Date().toISOString().split('T')[0];
+        const isActive = member.due >= today;
+        const statusClass = isActive ? 'status-active' : 'status-expired';
+        const statusText = isActive ? '✅ Active' : '❌ Expired';
+
+        const dueDate = new Date(member.due + 'T00:00:00').toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric'
+        });
+
+        const waiverBadge = member.waiverSigned 
+          ? '<span class="waiver-badge waiver-signed">✅ Signed</span>'
+          : '<span class="waiver-badge waiver-unsigned">⚠️ Pending</span>';
+
+        return `
+          <div class="member-card">
+            <div class="member-photo">
+              ${member.photo 
+                ? `<img src="${member.photo}" alt="${member.name}" />` 
+                : `<div class="member-photo-placeholder">👤</div>`
+              }
+            </div>
+            <div class="member-info">
+              <div class="member-name">${member.name}</div>
+              <div class="member-due">📅 ${dueDate}<span class="status-badge ${statusClass}">${statusText}</span></div>
+              <div class="member-remarks-section">
+                <div class="member-remarks" contenteditable="true" data-member-id="${member.id}" onblur="saveRemarks(${member.id}, this.innerText)" data-placeholder="Click to add remarks...">${member.remarks || ''}</div>
+              </div>
+              <div>${waiverBadge}</div>
+              <div class="member-actions">
+                <div class="action-row">
+                  <button class="btn-small btn-renew" onclick="renewMembership(${member.id})">🔄 Renew +1mo</button>
+                </div>
+                <div class="action-row">
+                  <button class="btn-small btn-edit" onclick="openEditModal(${member.id})">✏️ Edit</button>
+                  <button class="btn-small btn-delete" onclick="deleteMember(${member.id})">🗑️ Delete</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      updateStats();
+    }
+
+    // ==================== UPDATE STATISTICS ====================
+    function updateStats() {
+      const today = new Date().toISOString().split('T')[0];
+      const active = members.filter(m => m.due >= today).length;
+      const expired = members.length - active;
+
+      document.getElementById('totalCount').textContent = members.length;
+      document.getElementById('activeCount').textContent = active;
+      document.getElementById('expiredCount').textContent = expired;
+    }
+
+    // ==================== EDIT MODAL ====================
+    function openEditModal(id) {
+      editingMemberId = id;
+      const member = members.find(m => m.id === id);
+      document.getElementById('editName').value = member.name;
+      document.getElementById('editDue').value = member.due;
+      document.getElementById('editRemarks').value = member.remarks || '';
+      document.getElementById('editWaiverSigned').checked = member.waiverSigned;
+      editingPhotoData = member.photo;
+      
+      if (member.photo) {
+        document.getElementById('editPhotoPreview').innerHTML = `<img src="${member.photo}" />`;
+      } else {
+        document.getElementById('editPhotoPreview').innerHTML = '<span class="modal-photo-placeholder">👤</span>';
+      }
+      
+      document.getElementById('editModal').classList.add('active');
+    }
+
+    document.getElementById('cancelEditBtn').addEventListener('click', () => {
+      document.getElementById('editModal').classList.remove('active');
+      stopEditCamera();
+      editingMemberId = null;
+      editingPhotoData = null;
+    });
+
+    document.getElementById('editForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const member = members.find(m => m.id === editingMemberId);
+      member.name = document.getElementById('editName').value;
+      member.due = document.getElementById('editDue').value;
+      member.remarks = document.getElementById('editRemarks').value.trim();
+      member.waiverSigned = document.getElementById('editWaiverSigned').checked;
+      
+      if (editingPhotoData !== member.photo) {
+        member.photo = editingPhotoData;
+      }
+
+      saveMembersToStorage();
+      renderMembers();
+      renderExpiringToday();
+      renderByDate();
+      document.getElementById('editModal').classList.remove('active');
+      stopEditCamera();
+      alert('✅ Member updated successfully!');
+    });
+
+    // ==================== DELETE MEMBER ====================
+    function deleteMember(id) {
+      if (confirm('🗑️ Are you sure you want to delete this member?')) {
+        members = members.filter(m => m.id !== id);
+        saveMembersToStorage();
+        renderMembers();
+        renderExpiringToday();
+        renderByDate();
+      }
+    }
+
+    // ==================== STORAGE ====================
+    function saveMembersToStorage() {
+      localStorage.setItem('gymMembers', JSON.stringify(members));
+    }
+
+    // ==================== INITIAL RENDER ====================
+    renderMembers();
+  </script>
+</body>
+</html>
